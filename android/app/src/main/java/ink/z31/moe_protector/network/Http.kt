@@ -54,7 +54,7 @@ object Http {
         return httpExecute(request)
     }
 
-    fun post(url: String, data: String, isText: Boolean = false): String {
+    fun post(url: String, data: String, isText: Boolean = true): String {
         val mediaType = if (isText) {
             "text/x-markdown; charset=utf-8".toMediaType()
         } else {

@@ -25,6 +25,10 @@ class HmException(private val code: String): Exception() {
         }
     }
 
+    override fun toString(): String {
+        return "Code: $code: $message"
+    }
+
     override val message: String?
         get() = codeMsg[codeMsg.get(this.code)]
     

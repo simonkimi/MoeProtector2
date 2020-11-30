@@ -2,6 +2,7 @@ package ink.z31.moe_protector.util
 
 import android.util.Base64
 import android.util.Log
+import ink.z31.moe_protector.data.Const
 import javax.crypto.Mac
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
@@ -12,11 +13,11 @@ object CommonUtil {
     private const val MAC_NAME = "HmacSHA1"
     fun encryptionHMAC(source: String): String {
         val secretKey: SecretKey = SecretKeySpec(
-            "kHPmWZ4zQBYP24ubmJ5wA4oz0d8EgIFe".toByteArray(
-                charset(
-                    ENCODING
-                )
-            ), MAC_NAME
+                Const.authKey.toByteArray(
+                        charset(
+                                ENCODING
+                        )
+                ), MAC_NAME
         )
         val mac = Mac.getInstance(MAC_NAME)
         mac.init(secretKey)

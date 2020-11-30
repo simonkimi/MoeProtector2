@@ -1,6 +1,7 @@
 package ink.z31.moe_protector.network.interceptor
 
 import android.os.Build
+import ink.z31.moe_protector.data.Const
 import ink.z31.moe_protector.util.CommonUtil
 import ink.z31.moe_protector.util.DateUtil
 import okhttp3.Interceptor
@@ -16,7 +17,7 @@ class HeaderInterceptor : Interceptor {
             val gmtDate: String = DateUtil.GMTDate
             val stringToSign = "${request.method}\n$gmtDate\n${uri.path}"
             val newStringToSign = CommonUtil.encryptionHMAC(stringToSign)
-            val authorization = "HMS 881d3SlFucX5R5hE:$newStringToSign"
+            val authorization = "${Const.authHeader}:$newStringToSign"
             builder.header("Authorization", authorization)
             builder.header("Date", gmtDate)
             builder.header("Content-Type", "application/json")
