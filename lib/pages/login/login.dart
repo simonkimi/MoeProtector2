@@ -1,6 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moe_protector/util/bridge.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,17 +13,21 @@ mixin _LoginStateMixin<T extends StatefulWidget> on State<T> {
   var usernameController = TextEditingController();
   var passwordController = TextEditingController();
 
-
   login() async {
     SpUtil.putInt("serviceIndex", serverIndex);
     SpUtil.putString("username", usernameController.text);
     SpUtil.putString("password", passwordController.text);
-  }
 
+    var data = await AndroidBridge.createBasicMessageChannel("first_login", {
+      "username": usernameController.text,
+      "password": passwordController.text,
+      "service": serverIndex
+    }) as String;
+    print(data);
+  }
 }
 
 class _LoginPageState extends State<LoginPage> with _LoginStateMixin {
-
   @override
   void initState() {
     super.initState();
@@ -30,8 +35,6 @@ class _LoginPageState extends State<LoginPage> with _LoginStateMixin {
     passwordController.text = SpUtil.getString("password");
     serverIndex = SpUtil.getInt("serverIndex");
   }
-
-
 
   @override
   Widget build(BuildContext context) {
