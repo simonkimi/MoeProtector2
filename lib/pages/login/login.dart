@@ -1,3 +1,4 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -6,10 +7,31 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  String username = "";
-  String password = "";
-  int serverIndex = 0;
+mixin _LoginStateMixin<T extends StatefulWidget> on State<T> {
+  int serverIndex = SpUtil.getInt("serviceIndex", defValue: 0);
+  var usernameController = TextEditingController();
+  var passwordController = TextEditingController();
+
+
+  login() async {
+    SpUtil.putInt("serviceIndex", serverIndex);
+    SpUtil.putString("username", usernameController.text);
+    SpUtil.putString("password", passwordController.text);
+  }
+
+}
+
+class _LoginPageState extends State<LoginPage> with _LoginStateMixin {
+
+  @override
+  void initState() {
+    super.initState();
+    usernameController.text = SpUtil.getString("username");
+    passwordController.text = SpUtil.getString("password");
+    serverIndex = SpUtil.getInt("serverIndex");
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 25,
           ),
           FlatButton(
-            onPressed: () {},
+            onPressed: login,
             child: Text("登录"),
             minWidth: double.infinity,
             color: Theme.of(context).primaryColor,
@@ -80,20 +102,12 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           TextField(
             decoration: InputDecoration(labelText: "用户名"),
-            onChanged: (data) {
-              setState(() {
-                username = data;
-              });
-            },
+            controller: usernameController,
           ),
           TextField(
             obscureText: true,
             decoration: InputDecoration(labelText: "密码"),
-            onChanged: (data) {
-              setState(() {
-                password = data;
-              });
-            },
+            controller: passwordController,
           ),
           SizedBox(
             height: 5,
@@ -110,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text("IOS"),
               ),
             ],
-            onChanged: (int? value) {
+            onChanged: (value) {
               FocusScope.of(context).requestFocus(FocusNode());
               setState(() {
                 serverIndex = value ?? 0;
