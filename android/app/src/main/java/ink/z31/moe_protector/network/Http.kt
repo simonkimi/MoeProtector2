@@ -8,7 +8,11 @@ import ink.z31.moe_protector.network.interceptor.LoggingInterceptor
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 object Http {
     private var cookieStore = arrayListOf<Cookie>()
@@ -39,14 +43,27 @@ object Http {
         .addInterceptor(EncodeInterceptor())
         .build()
 
-    private fun httpExecute(request: Request): String {
-        val okResponse = okHttpClient.newCall(request).execute()
-        val io = okResponse.body!!.byteStream()
-        val content = Encode.ioToByteArray(io)
-        return String(content)
+    private suspend fun httpExecute(request: Request): String {
+        val okCall = okHttpClient.newCall(request)
+        return suspendCoroutine {
+            okCall.enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWithException(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val io = response.body!!.byteStream()
+                    val content = Encode.ioToByteArray(io)
+                    it.resume(String(content))
+                }
+
+            })
+        }
+
+
     }
 
-    fun get(url: String): String {
+    suspend fun get(url: String): String {
         val request = Request.Builder()
             .url(url)
             .get()
@@ -54,7 +71,7 @@ object Http {
         return httpExecute(request)
     }
 
-    fun post(url: String, data: String, isText: Boolean = true): String {
+    suspend fun post(url: String, data: String, isText: Boolean = true): String {
         val mediaType = if (isText) {
             "text/x-markdown; charset=utf-8".toMediaType()
         } else {
@@ -67,7 +84,7 @@ object Http {
         return httpExecute(request)
     }
 
-    fun post(url: String, data: Map<String, String>): String {
+    suspend fun post(url: String, data: Map<String, String>): String {
         val formBody = FormBody.Builder()
         data.forEach { formBody.add(it.key, it.value) }
         val request = Request.Builder()

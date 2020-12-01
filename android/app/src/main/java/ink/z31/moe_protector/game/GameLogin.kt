@@ -27,7 +27,7 @@ object FirstLogin {
     var token = ""
 
 
-    fun login(): List<ServerList> {
+    suspend fun login(): LoginServerListBean {
         for (i in 0..1) {
             if (token.isEmpty()) {
                 checkVersion()
@@ -42,7 +42,7 @@ object FirstLogin {
     }
 
 
-    private fun checkVersion() {
+    private suspend fun checkVersion() {
         when (serviceIndex) {
             0 -> {
                 channel = "100016"
@@ -57,9 +57,6 @@ object FirstLogin {
         }
         // 检查Version
         val version = Gson().fromJson(Http.get(urlVersion), LoginVersionBean::class.java)
-        if (version.eid == "-9999") {  // 服务器在维护
-            throw HmException("-9999")
-        }
         loginServer = version.loginServer
         hmLoginServer = version.hmLoginServer
         newVersionId = version.version.newVersionId
@@ -67,13 +64,13 @@ object FirstLogin {
         GameSender.version = newVersionId
     }
 
-    private fun checkToken(): Boolean {
+    private suspend fun checkToken(): Boolean {
         val url = "${hmLoginServer}1.0/get/userInfo/@self"
         val checkToken = Gson().fromJson(Http.post(url, """{"access_token": "$token"}"""), LoginTokenBean::class.java)
         return checkToken.error == 0
     }
 
-    private fun getLoginToken(): String {
+    private suspend fun getLoginToken(): String {
         val loginJson = """
             {"platform": "0","appid": "0","app_server_type": "0","password": "$password","username": "$username"}
         """.trimIndent()
@@ -85,10 +82,9 @@ object FirstLogin {
         return tokenBean.access_token
     }
 
-    private fun getServerList(): List<ServerList> {
+    private suspend fun getServerList(): LoginServerListBean {
         val url = "${loginServer}index/hmLogin/$token/${getUrlEnd()}"
-        val loginServerBean = Gson().fromJson(Http.get(url), LoginServerListBean::class.java)
-        return loginServerBean.serverList
+        return Gson().fromJson(Http.get(url), LoginServerListBean::class.java)
     }
 
     private fun getUrlEnd(): String {

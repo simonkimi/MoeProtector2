@@ -23,6 +23,7 @@ class HmException(private val code: String): Exception() {
         if (codeMsg.isEmpty()) {
             setErrMsg()
         }
+
     }
 
     override fun toString(): String {
@@ -30,7 +31,7 @@ class HmException(private val code: String): Exception() {
     }
 
     override val message: String?
-        get() = codeMsg[codeMsg.get(this.code)]
+        get() = codeMsg[this.code]
     
     
     private fun setErrMsg() {

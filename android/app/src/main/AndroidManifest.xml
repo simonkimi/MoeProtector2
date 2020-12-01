@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ink.z31.moe_protector">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -8,7 +9,9 @@
     <application
         android:name=".data.App"
         android:icon="@mipmap/icon_lp"
-        android:label="护萌宝">
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:label="护萌宝"
+        tools:targetApi="n">
         <service
             android:name=".game.GameService"
             android:enabled="true"
