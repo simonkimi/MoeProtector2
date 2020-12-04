@@ -7,6 +7,9 @@ class App : FlutterApplication() {
     companion object {
         lateinit var context: Context
     }
+    
+    
+    
 
 
     override fun onCreate() {

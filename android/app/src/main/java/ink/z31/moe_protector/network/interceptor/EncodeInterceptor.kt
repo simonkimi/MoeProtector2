@@ -22,7 +22,6 @@ class EncodeInterceptor: Interceptor{
             } else if (content[0] == 31.toByte() && content[1] == 139.toByte()) {
                 content = Encode.gzipUncompress(content)
             }
-            HmException.checkError(String(content))
             val responseBody = content.toResponseBody(mediaType)
             return response.newBuilder().body(responseBody).build()
         }

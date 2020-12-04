@@ -11,7 +11,7 @@ class LoggingInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         val startTime = System.nanoTime()
-        Log.d(TAG, "发送数据 ${request.url} on ${chain.connection()}")
+        Log.d(TAG, "发送数据 ${request.url}")
         val response = chain.proceed(request)
         val endTime = System.nanoTime()
         Log.d(
